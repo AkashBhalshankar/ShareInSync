@@ -27,6 +27,7 @@
 .force-visible{display:block!important;visibility:visible!important;opacity:1!important}
 .pairing.scanning{position:static;inset:auto;z-index:auto;max-width:1180px;padding:30px 24px 96px;background:transparent}.pairing.scanning .section-heading,.pairing.scanning>.steps,.pairing.scanning .qr-panel,.pairing.scanning #verification-card,.pairing.scanning .technical{display:block}.pairing.scanning .pairing-grid{display:block;max-width:520px;height:auto;margin:0 auto}.pairing.scanning .scan-panel{height:auto;min-height:0;padding:18px;border:1px solid var(--line);border-radius:24px;overflow:hidden}.pairing.scanning .scan-panel video{height:auto;min-height:300px;aspect-ratio:4/3;border-radius:18px;object-fit:cover}.pairing.scanning .scan-panel>.panel-kicker,.pairing.scanning .scan-panel>h2,.pairing.scanning .scan-panel #scan-progress,.pairing.scanning .scan-panel .button-row{position:static;color:inherit;text-shadow:none}.pairing.scanning .scan-panel .button-row{justify-content:flex-start}
 .brand-mark svg{width:26px;height:26px}
+.reconnect-home{display:flex;justify-content:center;margin:16px 0 0}
 .code-tab{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;color:var(--text);font:12px ui-monospace,SFMono-Regular,Consolas,monospace}.code-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan)}.code-tab-name{color:var(--muted);margin-left:4px}.pad-screen .editor-wrap{border-color:var(--line);border-radius:0 0 10px 10px;background:var(--surface-2);color:var(--text)}.pad-screen .editor-wrap pre,.pad-screen .editor-wrap textarea{font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}.pad-screen .pad-toolbar{background:var(--surface-2);padding:10px 12px;margin:0;border-left:1px solid var(--line);border-right:1px solid var(--line)}.pad-screen .pad-toolbar label{color:var(--muted)}
 </style>
 </head>
@@ -54,9 +55,10 @@
           <button id="send-role" class="role-card send" type="button"><span class="role-icon">↗</span><strong data-i18n="send">Send</strong><span data-i18n="sendHint">Choose files or a folder, then show your pairing code.</span><em data-i18n="start">Start a private session →</em></button>
           <button id="receive-role" class="role-card receive" type="button"><span class="role-icon">↙</span><strong data-i18n="receive">Receive</strong><span data-i18n="receiveHint">Scan your peer's code and choose where incoming files go.</span><em data-i18n="join">Join a private session →</em></button>
         </div>
+        <div class="reconnect-home"><button id="reconnect" class="button secondary" type="button" hidden>Reconnect saved device</button></div>
         <label class="device-name">Device name <input id="device-name" maxlength="24" placeholder="e.g. Akash's phone" autocomplete="off"></label>
         <div class="trust-row"><span>◈ End-to-end encrypted</span><span>◌ Zero retention</span><span>⌁ Works offline</span></div>
-        <details class="help"><summary data-i18n="help">How can this work without a server?</summary><p>The two browsers exchange WebRTC connection details through QR or copied text. No signaling, relay, or storage server is contacted. Some restrictive networks cannot make a direct connection.</p></details>
+        <details class="help"><summary data-i18n="help">How does private sharing work?</summary><p>A short-lived signaling session connects the two browsers; files and pad content then move directly peer-to-peer and are never stored by the signaling service.</p></details>
       </section>
 
       <section id="pairing-screen" class="screen pairing" aria-labelledby="pairing-title" hidden>
@@ -81,7 +83,7 @@
       </section>
 
       <section id="workspace-screen" class="screen workspace" aria-labelledby="workspace-title" hidden>
-        <div class="status-bar"><div><span id="peer-dot" class="status-dot"></span><strong id="workspace-title">Private workspace</strong><span id="peer-name" class="badge">Peer</span><span id="peer-status">Connecting…</span></div><div><label class="compact-label"><input id="alerts-toggle" type="checkbox" checked> Alerts</label><span id="verified-badge" class="badge">Unverified</span><button id="reconnect" class="button secondary small" type="button">Reconnect</button><button id="disconnect" data-i18n="disconnect" class="button danger small" type="button">Disconnect</button></div></div>
+        <div class="status-bar"><div><span id="peer-dot" class="status-dot"></span><strong id="workspace-title">Private workspace</strong><span id="peer-name" class="badge">Peer</span><span id="peer-status">Connecting…</span></div><div><label class="compact-label"><input id="alerts-toggle" type="checkbox" checked> Alerts</label><span id="verified-badge" class="badge">Unverified</span><button id="disconnect" data-i18n="disconnect" class="button danger small" type="button">Disconnect</button></div></div>
         <details class="diagnostics"><summary>Connection diagnostics</summary><output id="diagnostics-output">Waiting for peer statistics…</output></details>
         <div class="workspace-grid">
           <section id="files-panel" class="workspace-panel files-panel" aria-labelledby="files-title">
@@ -13652,7 +13654,6 @@ class Workspace {
     this.peer = peer; this.role = role; this.callbacks = callbacks; this.closing = false; this.onlineNotified = false; this.completed = new Set(); this.notifier = new SIS.Notifier(); this.manager = new SIS.TransferManager(peer); this.pad = new SIS.SharedPad(peer); this.transferUI = new SIS.TransferUI(this.manager, role); this.padUI = new SIS.PadUI(this.pad);
     this.screen = document.querySelector('#workspace-screen'); this.padScreen = document.querySelector('#pad-screen'); this.padPanel = document.querySelector('#pad-panel'); this.padScreen.append(this.padPanel);
     document.querySelector('#disconnect').addEventListener('click', () => this.disconnect('You disconnected'));
-    document.querySelector('#reconnect').addEventListener('click', () => this.reconnect());
     document.querySelector('#alerts-toggle').addEventListener('change', (event) => this.notifier.setEnabled(event.target.checked));
     document.querySelector('#open-pad').addEventListener('click', () => this.openPad()); document.querySelector('#close-pad').addEventListener('click', () => this.closePad());
     peer.addEventListener('state', ({ detail }) => this.state(detail)); peer.addEventListener('peername', ({ detail }) => { document.querySelector('#peer-name').textContent = detail.name; }); peer.addEventListener('error', ({ detail }) => { this.announce(detail.message); this.notifier.alert('error'); });
@@ -13674,7 +13675,6 @@ class Workspace {
   async remoteDisconnected(state) { this.closing = true; clearInterval(this.diagnosticsTimer); await this.manager.close(); this.pad.close(); this.padUI.close(); this.notifier.alert('error'); this.announce(`Peer connection ${state}; transient session data cleared`); this.callbacks.disconnect?.(`Peer ${state}. Start a new session to reconnect.`); }
   announce(message) { document.querySelector('#live-status').textContent = message; }
   async disconnect(reason) { this.closing = true; clearInterval(this.diagnosticsTimer); await this.manager.close(); this.pad.close(); this.padUI.close(); this.peer.close(); this.screen.hidden = true; this.padScreen.hidden = true; this.callbacks.disconnect?.(reason); }
-  async reconnect() { this.closing = true; clearInterval(this.diagnosticsTimer); await this.manager.close(); this.pad.close(); this.padUI.close(); this.peer.close(); this.screen.hidden = true; this.padScreen.hidden = true; this.callbacks.reconnect?.(this.role); }
 }
 
 Object.assign(SIS, { Workspace });
@@ -13690,6 +13690,7 @@ class App {
     this.home = document.querySelector('#home-screen');
     document.querySelector('#send-role').addEventListener('click', () => this.start('sender'));
     document.querySelector('#receive-role').addEventListener('click', () => this.start('receiver'));
+    document.querySelector('#reconnect').addEventListener('click', () => this.reconnectSaved());
     document.querySelector('#home-button').addEventListener('click', () => this.reset('Returned home'));
     document.querySelector('#theme-button').addEventListener('click', () => this.toggleTheme());
     document.querySelector('#install-button').addEventListener('click', () => this.install());
@@ -13697,15 +13698,16 @@ class App {
     window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); this.installPrompt = event; document.querySelector('#install-button').hidden = false; });
     window.addEventListener('pagehide', () => this.destroy()); window.addEventListener('offline', () => this.compatibility()); window.addEventListener('online', () => this.compatibility());
     this.applyTheme(localStorage.getItem('shareinsync-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-    SIS.setLanguage('en'); this.compatibility(); this.registerServiceWorker();
+    SIS.setLanguage('en'); this.updateReconnect(); this.compatibility(); this.registerServiceWorker();
   }
   async start(role, resumeId = '') {
     await this.destroy(); this.peer = new SIS.PeerSession({ name: document.querySelector('#device-name').value }); this.pairing = new SIS.PairingUI(this.peer, { verified: () => this.openWorkspace(role), cancel: (reason) => this.reset(reason) }); await this.pairing.start(role, resumeId);
   }
-  openWorkspace(role) { this.pairing?.close(); this.workspace = new SIS.Workspace(this.peer, role, { disconnect: (reason) => this.reset(reason), reconnect: () => this.reconnect(role) }); this.workspace.show(); }
-  async reconnect(role) { let saved; try { saved = JSON.parse(localStorage.getItem('shareinsync-cloud-session') || 'null'); } catch {} if (!saved?.id || saved.role !== role) return this.reset('No saved fast-pairing session. Scan a new QR.'); await this.start(role, saved.id); }
+  openWorkspace(role) { this.pairing?.close(); this.workspace = new SIS.Workspace(this.peer, role, { disconnect: (reason) => this.reset(reason) }); this.workspace.show(); }
+  async reconnectSaved() { let saved; try { saved = JSON.parse(localStorage.getItem('shareinsync-cloud-session') || 'null'); } catch {} if (!saved?.id || !saved.role) return this.reset('No saved device. Scan a new QR.'); await this.start(saved.role, saved.id); }
   async destroy() { if (this.workspace) { await this.workspace.manager.close(); this.workspace.pad.close(); } this.pairing?.close(); this.peer?.close(); this.workspace = this.pairing = this.peer = null; }
-  async reset(message = '') { await this.destroy(); for (const screen of document.querySelectorAll('.screen')) screen.hidden = screen !== this.home; document.querySelector('#verification-card').hidden = true; document.querySelector('#qr-canvas').hidden = true; document.querySelector('#qr-placeholder').hidden = false; document.querySelectorAll('.steps li').forEach((item, index) => item.classList.toggle('active', index === 0)); if (message) this.announce(message); }
+  async reset(message = '') { await this.destroy(); for (const screen of document.querySelectorAll('.screen')) screen.hidden = screen !== this.home; document.querySelector('#verification-card').hidden = true; document.querySelector('#qr-canvas').hidden = true; document.querySelector('#qr-placeholder').hidden = false; document.querySelectorAll('.steps li').forEach((item, index) => item.classList.toggle('active', index === 0)); this.updateReconnect(); if (message) this.announce(message); }
+  updateReconnect() { let saved; try { saved = JSON.parse(localStorage.getItem('shareinsync-cloud-session') || 'null'); } catch {} document.querySelector('#reconnect').hidden = !saved?.id; }
   applyTheme(theme) { document.documentElement.dataset.theme = theme; const button = document.querySelector('#theme-button'); button.textContent = theme === 'dark' ? '☀' : '☾'; button.setAttribute('aria-pressed', String(theme === 'dark')); }
   toggleTheme() { const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; this.applyTheme(theme); localStorage.setItem('shareinsync-theme', theme); }
   compatibility() {
