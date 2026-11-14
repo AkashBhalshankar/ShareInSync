@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#6d5dfc">
-  <meta name="description" content="Private serverless peer-to-peer file transfer and live code pad">
+  <meta name="description" content="Private serverless peer-to-peer file transfer and live code pad"><link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="manifest" href='data:application/manifest+json,{"name":"ShareInSync","short_name":"ShareInSync","start_url":"./","display":"standalone","background_color":"%230b1020","theme_color":"%236d5dfc","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect rx=%2216%22 width=%2264%22 height=%2264%22 fill=%22%236d5dfc%22/%3E%3Cpath d=%22M18 24h21l-6-6 4-4 13 13-13 13-4-4 6-6H18zm28 16H25l6 6-4 4-13-13 13-13 4 4-6 6h21z%22 fill=%22white%22/%3E%3C/svg%3E","sizes":"any","type":"image/svg+xml"}]}' crossorigin="use-credentials">
   <title>ShareInSync — direct file sharing</title>
   <style>:root{color-scheme:light;--bg:#f6f7fb;--surface:#fff;--surface-2:#f0f2f8;--text:#171a2b;--muted:#697086;--line:#dfe3ee;--primary:#6957f5;--primary-2:#8c7cff;--cyan:#16b8c8;--danger:#c93f52;--shadow:0 24px 70px rgba(31,35,55,.11);--radius:22px;--focus:#0c84ff;font:16px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -23,6 +23,9 @@
 .pairing-grid{display:block;max-width:520px;margin:0 auto}.pairing-grid>.panel{margin-bottom:14px}.workspace-grid{display:block}.workspace-panel{min-height:0}.pad-screen{max-width:960px}.pad-screen .workspace-panel{min-height:0}.pad-screen .editor-wrap{height:min(65vh,560px)}.mobile-tabs{display:none!important}
 .pad-panel{display:none}.pad-screen .pad-panel{display:block!important}.pad-screen .editor-wrap{display:block!important;min-height:300px}.pad-screen #pad-editor{display:block!important}.pairing-grid video{display:block;width:100%;height:min(70vh,620px);aspect-ratio:auto;margin:0;border-radius:0;background:#05070d;object-fit:cover}
 .editor-wrap #pad-lines{right:auto;width:48px;padding-right:10px;text-align:right;color:var(--muted);background:var(--surface-2);border-right:1px solid var(--line);user-select:none;z-index:1;pointer-events:none}.editor-wrap #pad-highlight,.editor-wrap #pad-editor{left:48px;width:calc(100% - 48px)}
+.force-visible{display:block!important;visibility:visible!important;opacity:1!important}
+.brand-mark svg{width:26px;height:26px}
+.code-tab{display:flex;align-items:center;gap:9px;padding:10px 14px;background:#171b26;border:1px solid #2a3142;border-bottom:0;border-radius:10px 10px 0 0;color:#d6d9e2;font:12px ui-monospace,SFMono-Regular,Consolas,monospace}.code-dot{width:8px;height:8px;border-radius:50%;background:#65d8ef}.code-tab-name{color:#8790a4;margin-left:4px}.pad-screen .editor-wrap{border-color:#2a3142;border-radius:0 0 10px 10px;background:#10141d}.pad-screen .editor-wrap pre,.pad-screen .editor-wrap textarea{font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}.pad-screen .pad-toolbar{background:#171b26;padding:10px 12px;margin:0;border-left:1px solid #2a3142;border-right:1px solid #2a3142}.pad-screen .pad-toolbar label{color:#a9b1c2}
 </style>
 </head>
 <body>
@@ -87,7 +90,7 @@
           </section>
           <section id="pad-panel" class="workspace-panel pad-panel" aria-labelledby="pad-title">
             <div class="panel-heading"><div><p class="panel-kicker">LIVE CODING</p><h2 id="pad-title" data-i18n="pad">Live coding</h2></div><span id="pad-presence" class="badge">Peer online</span></div>
-            <div class="pad-toolbar"><label>Language <select id="pad-language"><option value="text">Plain text</option><option value="javascript">JavaScript</option><option value="typescript">TypeScript</option><option value="json">JSON</option><option value="python">Python</option><option value="html">HTML</option><option value="css">CSS</option><option value="markdown">Markdown</option></select></label><div><button id="copy-pad" class="button ghost small" type="button">Copy</button><button id="clear-pad" class="button ghost small" type="button">Clear</button></div></div>
+            <div class="code-tab"><span class="code-dot"></span><span>shared-code</span><span class="code-tab-name">shareinsync.code</span></div><div class="pad-toolbar"><label>Language <select id="pad-language"><option value="text">Plain text</option><option value="javascript">JavaScript</option><option value="typescript">TypeScript</option><option value="json">JSON</option><option value="python">Python</option><option value="html">HTML</option><option value="css">CSS</option><option value="markdown">Markdown</option></select></label><div><button id="copy-pad" class="button ghost small" type="button">Copy</button><button id="clear-pad" class="button ghost small" type="button">Clear</button></div></div>
             <div class="editor-wrap"><pre id="pad-lines" aria-hidden="true">1</pre><pre id="pad-highlight" aria-hidden="true"></pre><textarea id="pad-editor" spellcheck="false" aria-label="Shared text and code pad" placeholder="Type or paste text and code here…"></textarea></div>
             <p id="pad-status" class="muted" role="status">Connected · changes sync directly</p>
           </section>
@@ -13603,8 +13606,8 @@ class Workspace {
     this.diagnosticsTimer = setInterval(() => this.updateDiagnostics(), 2500);
   }
   show() { document.querySelector('#pairing-screen').hidden = true; this.screen.hidden = false; document.querySelector('#peer-name').textContent = this.peer.remoteName; document.querySelector('#verified-badge').textContent = 'Verified'; document.querySelector('#verified-badge').classList.add('verified'); this.state(this.peer.state); document.querySelector('#files-title').focus?.(); this.announce('Verified private workspace ready'); }
-  openPad() { this.padScreen.append(this.padPanel); this.padPanel.hidden = false; this.padPanel.style.display = 'block'; this.screen.hidden = true; this.padScreen.hidden = false; document.querySelector('#pad-editor').style.display = 'block'; document.querySelector('#pad-editor').focus(); }
-  closePad() { document.querySelector('.workspace-grid').append(this.padPanel); this.padPanel.hidden = false; this.padScreen.hidden = true; this.screen.hidden = false; document.querySelector('#files-title').focus?.(); }
+  openPad() { this.padScreen.append(this.padPanel); this.padPanel.hidden = false; this.padPanel.classList.add('force-visible'); this.padPanel.style.display = 'block'; this.screen.hidden = true; this.padScreen.hidden = false; document.querySelector('#pad-editor').style.display = 'block'; document.querySelector('#pad-editor').focus(); }
+  closePad() { document.querySelector('.workspace-grid').append(this.padPanel); this.padPanel.hidden = false; this.padPanel.classList.remove('force-visible'); this.padScreen.hidden = true; this.screen.hidden = false; document.querySelector('#files-title').focus?.(); }
   state(state) { const online = state.connection === 'connected' && state.control === 'open' && state.bulk === 'open'; document.querySelector('#peer-dot').classList.toggle('online', online); document.querySelector('#peer-status').textContent = `${state.connection} · control ${state.control} · bulk ${state.bulk}`; if (online && !this.onlineNotified) { this.onlineNotified = true; this.notifier.alert('success'); } if (!this.closing && ['failed','closed','disconnected'].includes(state.connection)) this.remoteDisconnected(state.connection); }
   async updateDiagnostics() {
     try {
