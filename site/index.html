@@ -21,7 +21,8 @@
 @media(max-width:820px){.role-card,.role-card *{white-space:normal}.role-card{overflow:hidden}}
 .plain-heading{color:var(--text)!important}.device-name{display:flex;align-items:center;justify-content:center;gap:.6rem;max-width:520px;margin:18px auto;color:var(--muted);font-size:.85rem}.device-name input{width:220px;border:1px solid var(--line);border-radius:10px;padding:.55rem .7rem;background:var(--surface);color:var(--text)}.compact-label,.compact-settings label{font-size:.75rem;color:var(--muted)}.compact-settings{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 0}.diagnostics{margin:-6px 4px 12px;color:var(--muted);font-size:.78rem}.diagnostics output{display:block;padding:8px 0}.receive-tools{display:grid;gap:10px}.transfer-actions{display:flex;gap:5px;flex-wrap:wrap}@media(max-width:520px){.device-name{align-items:stretch;flex-direction:column}.device-name input{width:100%}.status-bar>div:last-child{flex-wrap:wrap;justify-content:flex-end}.compact-settings{align-items:flex-start;flex-direction:column}}
 .pairing-grid{display:block;max-width:520px;margin:0 auto}.pairing-grid>.panel{margin-bottom:14px}.workspace-grid{display:block}.workspace-panel{min-height:0}.pad-screen{max-width:960px}.pad-screen .workspace-panel{min-height:0}.pad-screen .editor-wrap{height:min(65vh,560px)}.mobile-tabs{display:none!important}
-.pad-panel{display:none}.pad-screen .pad-panel{display:block!important}.pairing-grid video{width:100%;margin:0;border-radius:0;min-height:300px;object-fit:cover}
+.pad-panel{display:none}.pad-screen .pad-panel{display:block!important}.pad-screen .editor-wrap{display:block!important;min-height:300px}.pad-screen #pad-editor{display:block!important}.pairing-grid video{display:block;width:100%;height:min(70vh,620px);aspect-ratio:auto;margin:0;border-radius:0;background:#05070d;object-fit:cover}
+.editor-wrap #pad-lines{right:auto;width:48px;padding-right:10px;text-align:right;color:var(--muted);background:var(--surface-2);border-right:1px solid var(--line);user-select:none;z-index:1;pointer-events:none}.editor-wrap #pad-highlight,.editor-wrap #pad-editor{left:48px;width:calc(100% - 48px)}
 </style>
 </head>
 <body>
@@ -87,7 +88,7 @@
           <section id="pad-panel" class="workspace-panel pad-panel" aria-labelledby="pad-title">
             <div class="panel-heading"><div><p class="panel-kicker">LIVE CODING</p><h2 id="pad-title" data-i18n="pad">Live coding</h2></div><span id="pad-presence" class="badge">Peer online</span></div>
             <div class="pad-toolbar"><label>Language <select id="pad-language"><option value="text">Plain text</option><option value="javascript">JavaScript</option><option value="typescript">TypeScript</option><option value="json">JSON</option><option value="python">Python</option><option value="html">HTML</option><option value="css">CSS</option><option value="markdown">Markdown</option></select></label><div><button id="copy-pad" class="button ghost small" type="button">Copy</button><button id="clear-pad" class="button ghost small" type="button">Clear</button></div></div>
-            <div class="editor-wrap"><pre id="pad-highlight" aria-hidden="true"></pre><textarea id="pad-editor" spellcheck="false" aria-label="Shared text and code pad" placeholder="Type or paste text and code here…"></textarea></div>
+            <div class="editor-wrap"><pre id="pad-lines" aria-hidden="true">1</pre><pre id="pad-highlight" aria-hidden="true"></pre><textarea id="pad-editor" spellcheck="false" aria-label="Shared text and code pad" placeholder="Type or paste text and code here…"></textarea></div>
             <p id="pad-status" class="muted" role="status">Connected · changes sync directly</p>
           </section>
         </div>
@@ -13474,6 +13475,7 @@ class TransferUI {
     for (const type of ['dragenter','dragover']) drop.addEventListener(type, (event) => { event.preventDefault(); drop.classList.add('drag'); });
     for (const type of ['dragleave','drop']) drop.addEventListener(type, (event) => { event.preventDefault(); drop.classList.remove('drag'); });
     drop.addEventListener('drop', (event) => this.add(event.dataTransfer.files));
+    drop.addEventListener('click', () => document.querySelector('#file-input').click());
     drop.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') document.querySelector('#file-input').click(); });
     document.addEventListener('paste', (event) => { if (role !== 'sender' || event.target.closest('.editor-wrap')) return; const files = [...event.clipboardData.files].filter((file) => file.type.startsWith('image/')); if (files.length) this.add(files); });
     this.list.addEventListener('click', (event) => this.action(event));
@@ -13559,8 +13561,8 @@ const SIS = globalThis.ShareInSync ||= {};
 
 class PadUI {
   constructor(pad) {
-    this.pad = pad; this.editor = document.querySelector('#pad-editor'); this.highlight = document.querySelector('#pad-highlight'); this.language = document.querySelector('#pad-language'); this.timer = null;
-    this.editor.addEventListener('input', () => this.input()); this.editor.addEventListener('scroll', () => { this.highlight.scrollTop = this.editor.scrollTop; this.highlight.scrollLeft = this.editor.scrollLeft; });
+    this.pad = pad; this.editor = document.querySelector('#pad-editor'); this.highlight = document.querySelector('#pad-highlight'); this.lines = document.querySelector('#pad-lines'); this.language = document.querySelector('#pad-language'); this.timer = null;
+    this.editor.addEventListener('input', () => this.input()); this.editor.addEventListener('scroll', () => { this.highlight.scrollTop = this.editor.scrollTop; this.highlight.scrollLeft = this.editor.scrollLeft; this.lines.scrollTop = this.editor.scrollTop; });
     this.editor.addEventListener('select', () => pad.presence({ start: this.editor.selectionStart, end: this.editor.selectionEnd }));
     this.language.addEventListener('change', () => { pad.setLanguage(this.language.value); this.renderHighlight(); });
     document.querySelector('#copy-pad').addEventListener('click', () => this.copy());
@@ -13575,7 +13577,7 @@ class PadUI {
     this.renderHighlight(); document.querySelector('#pad-status').textContent = 'Syncing…'; clearTimeout(this.timer);
     this.timer = setTimeout(() => { this.pad.localEdit(this.editor.value, { start: this.editor.selectionStart, end: this.editor.selectionEnd }); document.querySelector('#pad-status').textContent = 'Synced directly'; }, 80);
   }
-  renderHighlight() { this.highlight.innerHTML = `${SIS.highlight(this.editor.value, this.language.value)}\n`; }
+  renderHighlight() { this.highlight.innerHTML = `${SIS.highlight(this.editor.value, this.language.value)}\n`; this.lines.textContent = Array.from({ length: Math.max(1, this.editor.value.split('\n').length) }, (_, index) => index + 1).join('\n'); this.lines.scrollTop = this.editor.scrollTop; }
   async copy() { try { await navigator.clipboard.writeText(this.editor.value); document.querySelector('#pad-status').textContent = 'Pad copied'; } catch { document.querySelector('#pad-status').textContent = 'Clipboard permission was blocked'; } }
   async confirmClear() { const dialog = document.querySelector('#confirm-dialog'); dialog.showModal(); const result = await new Promise((resolve) => dialog.addEventListener('close', () => resolve(dialog.returnValue), { once: true })); if (result === 'confirm') { this.editor.value = ''; this.pad.clear(); this.renderHighlight(); } }
   close() { clearTimeout(this.timer); this.editor.value = ''; this.renderHighlight(); }
@@ -13601,7 +13603,7 @@ class Workspace {
     this.diagnosticsTimer = setInterval(() => this.updateDiagnostics(), 2500);
   }
   show() { document.querySelector('#pairing-screen').hidden = true; this.screen.hidden = false; document.querySelector('#peer-name').textContent = this.peer.remoteName; document.querySelector('#verified-badge').textContent = 'Verified'; document.querySelector('#verified-badge').classList.add('verified'); this.state(this.peer.state); document.querySelector('#files-title').focus?.(); this.announce('Verified private workspace ready'); }
-  openPad() { this.padScreen.append(this.padPanel); this.padPanel.hidden = false; this.screen.hidden = true; this.padScreen.hidden = false; document.querySelector('#pad-editor').focus(); }
+  openPad() { this.padScreen.append(this.padPanel); this.padPanel.hidden = false; this.padPanel.style.display = 'block'; this.screen.hidden = true; this.padScreen.hidden = false; document.querySelector('#pad-editor').style.display = 'block'; document.querySelector('#pad-editor').focus(); }
   closePad() { document.querySelector('.workspace-grid').append(this.padPanel); this.padPanel.hidden = false; this.padScreen.hidden = true; this.screen.hidden = false; document.querySelector('#files-title').focus?.(); }
   state(state) { const online = state.connection === 'connected' && state.control === 'open' && state.bulk === 'open'; document.querySelector('#peer-dot').classList.toggle('online', online); document.querySelector('#peer-status').textContent = `${state.connection} · control ${state.control} · bulk ${state.bulk}`; if (online && !this.onlineNotified) { this.onlineNotified = true; this.notifier.alert('success'); } if (!this.closing && ['failed','closed','disconnected'].includes(state.connection)) this.remoteDisconnected(state.connection); }
   async updateDiagnostics() {
