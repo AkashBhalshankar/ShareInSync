@@ -15,7 +15,7 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 /* Compact visual scale: keep pairing and workspace visible without oversized cards. */
-.site-header{height:62px;max-width:1100px}.screen{max-width:1080px;padding:30px 24px 68px}.hero{max-width:760px;margin-bottom:28px}.hero h1{font-size:clamp(2.15rem,5vw,4rem);margin-bottom:.9rem}.lede{font-size:1rem}.role-grid{max-width:780px;gap:16px}.role-card{padding:21px;gap:.55rem}.role-icon{width:44px;height:44px;border-radius:14px}.trust-row{margin:20px auto}.pairing{max-width:900px}.pairing-grid{gap:16px}.panel,.workspace-panel{padding:18px}.qr-wrap,.camera-empty,video{width:min(100%,248px);margin:12px auto}.section-heading{margin-bottom:16px}.steps{margin-bottom:18px}.verification{gap:16px;margin-top:16px}.workspace{max-width:1200px}.workspace-panel{min-height:520px}.editor-wrap{height:370px}.drop-zone{padding:22px}.status-bar{margin-bottom:14px}.panel-heading{margin-bottom:13px}
+.site-header{height:62px;max-width:1100px}.screen{max-width:1080px;padding:30px 24px 68px}.hero{max-width:760px;margin-bottom:28px}.hero h1{font-size:clamp(2.15rem,5vw,4rem);margin-bottom:.9rem}.lede{font-size:1rem}.role-grid{max-width:780px;gap:16px}.role-card{padding:21px;gap:.55rem}.role-icon{width:44px;height:44px;border-radius:14px}.trust-row{margin:20px auto}.pairing{max-width:900px}.pairing-grid{gap:16px}.panel,.workspace-panel{padding:18px}.qr-wrap,video{width:min(100%,390px);margin:12px auto}.section-heading{margin-bottom:16px}.steps{margin-bottom:18px}.verification{gap:16px;margin-top:16px}.workspace{max-width:1200px}.workspace-panel{min-height:520px}.editor-wrap{height:370px}.drop-zone{padding:22px}.status-bar{margin-bottom:14px}.panel-heading{margin-bottom:13px}
 @media(max-width:820px){.hero h1{font-size:2.25rem}.screen{padding-top:22px}.workspace-panel{min-height:calc(100vh - 190px)}}
 @media(max-width:820px){html,body,#app,main,.screen,.hero,.role-grid,.role-card,.trust-row{max-width:100%;min-width:0}.role-grid,.role-card{width:100%}.hero h1,.role-card span,.role-card em{overflow-wrap:anywhere}.hero h1{font-size:clamp(1.95rem,9vw,2.25rem)}body{overflow-x:hidden}}
 @media(max-width:820px){.role-card,.role-card *{white-space:normal}.role-card{overflow:hidden}}
@@ -64,7 +64,7 @@
           </article>
           <article class="panel scan-panel">
             <p class="panel-kicker" id="scan-kicker">PEER CODE</p><h2 id="scan-heading">Scan or paste the response</h2>
-            <video id="camera" playsinline muted hidden></video><div id="camera-empty" class="camera-empty"><span>⌗</span><p>Camera starts only when you ask.</p></div>
+            <video id="camera" playsinline muted hidden></video>
             <p id="scan-progress" class="muted">No frames scanned</p>
             <input id="qr-image-input" type="file" accept="image/*" hidden><div class="button-row"><button id="start-camera" class="button primary" type="button">Start camera</button><button id="scan-image" class="button secondary" type="button">QR image</button><button id="paste-code" class="button secondary" type="button">Paste code</button></div>
           </article>
@@ -13411,7 +13411,7 @@ class PairingUI {
   async startCamera() {
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
-      this.video.srcObject = this.stream; this.video.hidden = false; document.querySelector('#camera-empty').hidden = true; await this.video.play();
+      this.video.srcObject = this.stream; this.video.hidden = false; await this.video.play();
       const detector = 'BarcodeDetector' in globalThis ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
       const scan = async () => {
         if (!this.stream) return;
@@ -13438,7 +13438,7 @@ class PairingUI {
     } catch (error) { this.error(error.message); }
     finally { document.querySelector('#qr-image-input').value = ''; }
   }
-  stopCamera() { if (this.scanTimer) cancelAnimationFrame(this.scanTimer); this.scanTimer = null; for (const track of this.stream?.getTracks() || []) track.stop(); this.stream = null; this.video.srcObject = null; this.video.hidden = true; document.querySelector('#camera-empty').hidden = false; }
+  stopCamera() { if (this.scanTimer) cancelAnimationFrame(this.scanTimer); this.scanTimer = null; for (const track of this.stream?.getTracks() || []) track.stop(); this.stream = null; this.video.srcObject = null; this.video.hidden = true; }
   showVerification(code) { document.querySelector('#verification-code').textContent = code; document.querySelector('#verification-card').hidden = false; document.querySelectorAll('.steps li')[2].classList.add('active'); this.announce(`Verification code ${code}`); }
   renderState(state) { document.querySelector('#connection-details').textContent = `Connection: ${state.connection}\nICE: ${state.ice}\nControl channel: ${state.control}\nBulk channel: ${state.bulk}\nVerified: ${state.verified ? 'yes' : 'no'}`; }
   announce(message) { document.querySelector('#live-status').textContent = message; }
