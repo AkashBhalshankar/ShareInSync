@@ -78,20 +78,20 @@
         <details class="diagnostics"><summary>Connection diagnostics</summary><output id="diagnostics-output">Waiting for peer statistics…</output></details>
         <div class="workspace-grid">
           <section id="files-panel" class="workspace-panel files-panel" aria-labelledby="files-title">
-            <div class="panel-heading"><div><p class="panel-kicker">DIRECT TRANSFER</p><h2 id="files-title" data-i18n="files">Files</h2></div><div class="button-row"><output id="overall-progress">Nothing queued</output><button id="open-pad" class="button secondary small" type="button">Open shared pad</button></div></div>
+            <div class="panel-heading"><div><p class="panel-kicker">DIRECT TRANSFER</p><h2 id="files-title" data-i18n="files">Files</h2></div><div class="button-row"><output id="overall-progress">Nothing queued</output><button id="open-pad" class="button secondary small" type="button">Live coding</button></div></div>
             <div id="send-tools" class="send-tools"><input id="file-input" type="file" multiple hidden><input id="folder-input" type="file" webkitdirectory multiple hidden><div class="button-row"><button id="pick-files" class="button primary" type="button">Add files</button><button id="pick-folder" class="button secondary" type="button">Add folder</button></div><div class="compact-settings"><label>Speed <select id="bandwidth-limit"><option value="0">Unlimited</option><option value="5">5 Mbps</option><option value="10">10 Mbps</option><option value="25">25 Mbps</option><option value="50">50 Mbps</option></select></label><label><input id="zip-folder" type="checkbox"> ZIP folder ≤256 MiB</label></div><div id="drop-zone" class="drop-zone" tabindex="0">Drop files here or paste an image</div></div>
             <div id="receive-tools" class="receive-tools" hidden><p><strong>Incoming files appear below.</strong> Choose a destination before accepting.</p><div class="compact-settings"><button id="choose-receive-folder" class="button secondary small" type="button">Choose receive folder</button><label>Auto-accept <select id="auto-accept-limit"><option value="0">Off</option><option value="10">≤10 MiB</option><option value="50">≤50 MiB</option><option value="100">≤100 MiB</option></select></label></div><div id="memory-warning" class="notice subtle"></div></div>
             <ul id="transfer-list" class="transfer-list"><li class="empty-state">Your transfer queue is empty.</li></ul>
           </section>
           <section id="pad-panel" class="workspace-panel pad-panel" aria-labelledby="pad-title">
-            <div class="panel-heading"><div><p class="panel-kicker">LIVE TOGETHER</p><h2 id="pad-title" data-i18n="pad">Shared pad</h2></div><span id="pad-presence" class="badge">Peer online</span></div>
+            <div class="panel-heading"><div><p class="panel-kicker">LIVE CODING</p><h2 id="pad-title" data-i18n="pad">Live coding</h2></div><span id="pad-presence" class="badge">Peer online</span></div>
             <div class="pad-toolbar"><label>Language <select id="pad-language"><option value="text">Plain text</option><option value="javascript">JavaScript</option><option value="typescript">TypeScript</option><option value="json">JSON</option><option value="python">Python</option><option value="html">HTML</option><option value="css">CSS</option><option value="markdown">Markdown</option></select></label><div><button id="copy-pad" class="button ghost small" type="button">Copy</button><button id="clear-pad" class="button ghost small" type="button">Clear</button></div></div>
             <div class="editor-wrap"><pre id="pad-highlight" aria-hidden="true"></pre><textarea id="pad-editor" spellcheck="false" aria-label="Shared text and code pad" placeholder="Type or paste text and code here…"></textarea></div>
             <p id="pad-status" class="muted" role="status">Connected · changes sync directly</p>
           </section>
         </div>
       </section>
-      <section id="pad-screen" class="screen pad-screen" aria-labelledby="pad-title" hidden><div class="section-heading"><button id="close-pad" class="icon-button" type="button" aria-label="Back to files">←</button><div><p class="eyebrow">LIVE TOGETHER</p><h1>Shared pad</h1></div></div></section>
+      <section id="pad-screen" class="screen pad-screen" aria-labelledby="pad-title" hidden><div class="section-heading"><button id="close-pad" class="icon-button" type="button" aria-label="Back to files">←</button><div><p class="eyebrow">LIVE CODING</p><h1>Live coding</h1></div></div></section>
     </main>
     <div id="live-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   </div>
