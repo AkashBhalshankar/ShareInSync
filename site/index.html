@@ -28,6 +28,7 @@
 .pairing.scanning{position:static;inset:auto;z-index:auto;max-width:1180px;padding:30px 24px 96px;background:transparent}.pairing.scanning .section-heading,.pairing.scanning>.steps,.pairing.scanning .qr-panel,.pairing.scanning #verification-card,.pairing.scanning .technical{display:block}.pairing.scanning .pairing-grid{display:block;max-width:520px;height:auto;margin:0 auto}.pairing.scanning .scan-panel{height:auto;min-height:0;padding:18px;border:1px solid var(--line);border-radius:24px;overflow:hidden}.pairing.scanning .scan-panel video{height:auto;min-height:300px;aspect-ratio:4/3;border-radius:18px;object-fit:cover}.pairing.scanning .scan-panel>.panel-kicker,.pairing.scanning .scan-panel>h2,.pairing.scanning .scan-panel #scan-progress,.pairing.scanning .scan-panel .button-row{position:static;color:inherit;text-shadow:none}.pairing.scanning .scan-panel .button-row{justify-content:flex-start}
 .brand-mark svg{width:26px;height:26px}
 .reconnect-home{display:flex;justify-content:center;margin:16px 0 0}
+.code-room-home{max-width:780px;margin:22px auto 0;padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:18px}.code-room-home h2{margin:.1rem 0}.code-room-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.code-room-actions input{width:108px;text-transform:uppercase;letter-spacing:.12em;border:1px solid var(--line);border-radius:10px;padding:.7rem;background:var(--surface-2);color:var(--text)}.link-button{border:0;background:none;color:var(--primary);font:inherit;font-weight:750;cursor:pointer}@media(max-width:820px){.code-room-home{align-items:stretch;flex-direction:column}.code-room-actions{align-items:stretch;flex-direction:column}.code-room-actions input{width:100%}}
 .code-tab{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;color:var(--text);font:12px ui-monospace,SFMono-Regular,Consolas,monospace}.code-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan)}.code-tab-name{color:var(--muted);margin-left:4px}.pad-screen .editor-wrap{border-color:var(--line);border-radius:0 0 10px 10px;background:var(--surface-2);color:var(--text)}.pad-screen .editor-wrap pre,.pad-screen .editor-wrap textarea{font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}.pad-screen .pad-toolbar{background:var(--surface-2);padding:10px 12px;margin:0;border-left:1px solid var(--line);border-right:1px solid var(--line)}.pad-screen .pad-toolbar label{color:var(--muted)}
 </style>
 </head>
@@ -56,6 +57,7 @@
           <button id="receive-role" class="role-card receive" type="button"><span class="role-icon">↙</span><strong data-i18n="receive">Receive</strong><span data-i18n="receiveHint">Scan your peer's code and choose where incoming files go.</span><em data-i18n="join">Join a private session →</em></button>
         </div>
         <div class="reconnect-home"><button id="reconnect" class="button secondary" type="button" hidden>Reconnect saved device</button></div>
+        <section class="code-room-home" aria-labelledby="code-room-title"><div><p class="panel-kicker">LIVE CODING</p><h2 id="code-room-title">Share code instantly</h2><p class="muted">No account required · rooms expire after 24 hours of inactivity</p></div><div class="code-room-actions"><button id="create-code-room" class="button primary" type="button">Create code room</button><span>or</span><input id="code-room-slug" maxlength="6" placeholder="ROOM ID" aria-label="Six-character code room ID"><button id="join-code-room" class="button secondary" type="button">Join room</button></div></section>
         <label class="device-name">Device name <input id="device-name" maxlength="24" placeholder="e.g. Akash's phone" autocomplete="off"></label>
         <div class="trust-row"><span>◈ End-to-end encrypted</span><span>◌ Zero retention</span><span>⌁ Works offline</span></div>
         <details class="help"><summary data-i18n="help">How does private sharing work?</summary><p>A short-lived signaling session connects the two browsers; files and pad content then move directly peer-to-peer and are never stored by the signaling service.</p></details>
@@ -87,7 +89,7 @@
         <details class="diagnostics"><summary>Connection diagnostics</summary><output id="diagnostics-output">Waiting for peer statistics…</output></details>
         <div class="workspace-grid">
           <section id="files-panel" class="workspace-panel files-panel" aria-labelledby="files-title">
-            <div class="panel-heading"><div><p class="panel-kicker">DIRECT TRANSFER</p><h2 id="files-title" data-i18n="files">Files</h2></div><div class="button-row"><output id="overall-progress">Nothing queued</output><button id="open-pad" class="button secondary small" type="button">Live coding</button></div></div>
+            <div class="panel-heading"><div><p class="panel-kicker">DIRECT TRANSFER</p><h2 id="files-title" data-i18n="files">Files</h2></div><div class="button-row"><output id="overall-progress">Nothing queued</output></div></div>
             <div id="send-tools" class="send-tools"><input id="file-input" type="file" multiple hidden><input id="folder-input" type="file" webkitdirectory multiple hidden><div class="button-row"><button id="pick-files" class="button primary" type="button">Add files</button><button id="pick-folder" class="button secondary" type="button">Add folder</button></div><div class="compact-settings"><label>Speed <select id="bandwidth-limit"><option value="0">Unlimited</option><option value="5">5 Mbps</option><option value="10">10 Mbps</option><option value="25">25 Mbps</option><option value="50">50 Mbps</option></select></label><label><input id="zip-folder" type="checkbox" checked> Send folder as one ZIP</label></div><div id="drop-zone" class="drop-zone" tabindex="0">Click to select files or folder · or drop them here</div></div>
             <div id="receive-tools" class="receive-tools" hidden><p><strong>Incoming files appear below.</strong> Choose a destination before accepting.</p><div class="compact-settings"><button id="choose-receive-folder" class="button secondary small" type="button">Choose receive folder</button><label>Auto-accept <select id="auto-accept-limit"><option value="0">Off</option><option value="10">≤10 MiB</option><option value="50">≤50 MiB</option><option value="100">≤100 MiB</option></select></label></div><div id="memory-warning" class="notice subtle"></div></div>
             <ul id="transfer-list" class="transfer-list"><li class="empty-state">Your transfer queue is empty.</li></ul>
@@ -100,7 +102,7 @@
           </section>
         </div>
       </section>
-      <section id="pad-screen" class="screen pad-screen" aria-labelledby="pad-title" hidden><div class="section-heading"><button id="close-pad" class="icon-button" type="button" aria-label="Back to files">←</button><div><p class="eyebrow">LIVE CODING</p><h1>Live coding</h1></div></div></section>
+      <section id="pad-screen" class="screen pad-screen" aria-labelledby="pad-title" hidden><div class="section-heading"><button id="close-pad" class="icon-button" type="button" aria-label="Back home">←</button><div><p class="eyebrow">LIVE CODE ROOM</p><h1>Live coding</h1><p class="muted">Room <strong id="active-room-id">------</strong> · <button id="copy-room-link" class="link-button" type="button">Copy invite link</button></p></div></div></section>
     </main>
     <div id="live-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -12643,6 +12645,9 @@ async function readCloudSignals(id, baseUrl = CLOUD_SIGNALING_URL) {
   SIS.assert(response.ok, 'Could not read reconnect signal', 'SIGNALING_UNAVAILABLE');
   return response.json();
 }
+async function createCodeRoom(baseUrl = CLOUD_SIGNALING_URL) { const response = await fetch(`${baseUrl.replace(/\/$/u, '')}/code`, { method: 'POST' }); SIS.assert(response.ok, 'Could not create code room', 'ROOM_UNAVAILABLE'); return (await response.json()).id; }
+async function readCodeRoom(id, baseUrl = CLOUD_SIGNALING_URL) { const response = await fetch(`${baseUrl.replace(/\/$/u, '')}/code/${encodeURIComponent(id)}`); SIS.assert(response.ok, 'Code room expired or unavailable', 'ROOM_UNAVAILABLE'); return response.json(); }
+async function writeCodeRoom(id, text, language, baseUrl = CLOUD_SIGNALING_URL) { const response = await fetch(`${baseUrl.replace(/\/$/u, '')}/code/${encodeURIComponent(id)}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, language }) }); SIS.assert(response.ok, 'Could not sync code room', 'ROOM_UNAVAILABLE'); return response.json(); }
 
 function encodeSignal(kind, description, now = Date.now()) {
   SIS.assert(kind === 'offer' || kind === 'answer', 'Unsupported signal kind', 'BAD_KIND');
@@ -12706,7 +12711,7 @@ class FrameAssembler {
   }
 }
 
-Object.assign(SIS, { SIGNAL_VERSION, SIGNAL_TTL, CLOUD_SIGNALING_URL, encodeSignal, decodeSignal, createFrames, FrameAssembler, createCloudSession, publishCloudSignal, readCloudSignals });
+Object.assign(SIS, { SIGNAL_VERSION, SIGNAL_TTL, CLOUD_SIGNALING_URL, encodeSignal, decodeSignal, createFrames, FrameAssembler, createCloudSession, publishCloudSignal, readCloudSignals, createCodeRoom, readCodeRoom, writeCodeRoom });
 
 }
 
@@ -13287,50 +13292,20 @@ Object.assign(SIS, { escapeHtml, highlight, SUPPORTED_LANGUAGES: ['text', 'javas
 
 {
 const SIS = globalThis.ShareInSync ||= {};
-const MAX_PAD_CHARS = 1024 * 1024;
 
-class SharedPad extends EventTarget {
-  constructor(peer, author = peer.id) {
-    super(); this.peer = peer; this.author = author; this.clock = 0; this.text = ''; this.language = 'text'; this.remoteSelection = null;
-    peer.addEventListener('control', ({ detail }) => this.onControl(detail));
-  }
-  publish(type, detail) { SIS.dispatchDetail(this, type, detail); }
-  localEdit(text, selection = null) {
-    SIS.assert(typeof text === 'string' && text.length <= MAX_PAD_CHARS, 'Pad is limited to 1 MiB of text', 'TOO_LARGE');
-    this.clock += 1; this.text = text;
-    const message = { type: 'pad-op', clock: this.clock, author: this.author, text, selection: this.validSelection(selection) };
-    this.peer.sendControl(message); this.publish('change', { text, local: true, clock: this.clock });
-  }
-  setLanguage(language) {
-    SIS.assert(SIS.SUPPORTED_LANGUAGES.includes(language), 'Unsupported language', 'BAD_SCHEMA');
-    this.language = language; this.peer.sendControl({ type: 'pad-language', language }); this.publish('language', { language, local: true });
-  }
-  clear() { this.localEdit('', { start: 0, end: 0 }); this.peer.sendControl({ type: 'pad-cleared' }); }
-  presence(selection) { this.peer.sendControl({ type: 'pad-presence', author: this.author, selection: this.validSelection(selection) }); }
-  validSelection(selection) {
-    if (!selection) return null; const start = Number(selection.start); const end = Number(selection.end);
-    SIS.assert(Number.isSafeInteger(start) && Number.isSafeInteger(end) && start >= 0 && end >= start && end <= MAX_PAD_CHARS, 'Invalid selection', 'BAD_SCHEMA'); return { start, end };
-  }
-  wins(message) { return message.clock > this.clock || (message.clock === this.clock && String(message.author) > this.author); }
-  onControl(message) {
-    try {
-      if (message.type === 'pad-op') {
-        SIS.assert(Number.isSafeInteger(message.clock) && message.clock > 0 && typeof message.author === 'string' && message.author.length <= 20, 'Invalid pad revision', 'BAD_SCHEMA');
-        SIS.assert(typeof message.text === 'string' && message.text.length <= MAX_PAD_CHARS, 'Invalid pad text', 'TOO_LARGE'); this.validSelection(message.selection);
-        if (this.wins(message)) { this.clock = message.clock; this.text = message.text; this.remoteSelection = message.selection; this.publish('change', { text: this.text, local: false, clock: this.clock, selection: message.selection }); }
-        else if (message.clock < this.clock) this.peer.sendControl({ type: 'pad-sync', clock: this.clock, author: this.author, text: this.text, language: this.language });
-      } else if (message.type === 'pad-sync') {
-        if (this.wins(message)) { SIS.assert(typeof message.text === 'string' && message.text.length <= MAX_PAD_CHARS, 'Invalid pad sync', 'BAD_SCHEMA'); this.clock = message.clock; this.text = message.text; this.language = SIS.SUPPORTED_LANGUAGES.includes(message.language) ? message.language : 'text'; this.publish('change', { text: this.text, local: false, resynced: true }); }
-      } else if (message.type === 'pad-language') {
-        SIS.assert(SIS.SUPPORTED_LANGUAGES.includes(message.language), 'Unsupported language', 'BAD_SCHEMA'); this.language = message.language; this.publish('language', { language: this.language, local: false });
-      } else if (message.type === 'pad-presence') { this.remoteSelection = this.validSelection(message.selection); this.publish('presence', { author: message.author, selection: this.remoteSelection }); }
-      else if (message.type === 'pad-cleared') this.publish('cleared', { remote: true });
-    } catch (error) { this.publish('error', { message: error.message, code: error.code }); }
-  }
-  close() { this.text = ''; this.clock = 0; this.remoteSelection = null; this.publish('change', { text: '', local: false, closed: true }); }
+class CloudCodeRoom extends EventTarget {
+  constructor(id) { super(); this.id = id; this.text = ''; this.language = 'text'; this.revision = -1; this.timer = null; this.closed = false; }
+  emit(type, detail) { const event = new Event(type); event.detail = detail; this.dispatchEvent(event); }
+  async start() { await this.refresh(); this.timer = setInterval(() => this.refresh().catch((error) => this.emit('error', { message: error.message })), 900); }
+  async refresh() { if (this.closed) return; const state = await SIS.readCodeRoom(this.id); if (state.revision > this.revision) { const changed = this.revision >= 0; this.revision = state.revision; this.text = state.text; this.language = state.language; if (changed) this.emit('change', { text: this.text, local: false }); this.emit('language', { language: this.language, local: false }); } }
+  async localEdit(text) { this.text = text; const state = await SIS.writeCodeRoom(this.id, text, this.language); this.revision = state.revision; }
+  async setLanguage(language) { this.language = language; const state = await SIS.writeCodeRoom(this.id, this.text, language); this.revision = state.revision; this.emit('language', { language, local: true }); }
+  presence() {}
+  clear() { return this.localEdit(''); }
+  close() { this.closed = true; clearInterval(this.timer); this.timer = null; }
 }
 
-Object.assign(SIS, { MAX_PAD_CHARS, SharedPad });
+Object.assign(SIS, { CloudCodeRoom });
 
 }
 
@@ -13651,19 +13626,16 @@ const SIS = globalThis.ShareInSync ||= {};
 
 class Workspace {
   constructor(peer, role, callbacks = {}) {
-    this.peer = peer; this.role = role; this.callbacks = callbacks; this.closing = false; this.onlineNotified = false; this.completed = new Set(); this.notifier = new SIS.Notifier(); this.manager = new SIS.TransferManager(peer); this.pad = new SIS.SharedPad(peer); this.transferUI = new SIS.TransferUI(this.manager, role); this.padUI = new SIS.PadUI(this.pad);
-    this.screen = document.querySelector('#workspace-screen'); this.padScreen = document.querySelector('#pad-screen'); this.padPanel = document.querySelector('#pad-panel'); this.padScreen.append(this.padPanel);
+    this.peer = peer; this.role = role; this.callbacks = callbacks; this.closing = false; this.onlineNotified = false; this.completed = new Set(); this.notifier = new SIS.Notifier(); this.manager = new SIS.TransferManager(peer); this.transferUI = new SIS.TransferUI(this.manager, role);
+    this.screen = document.querySelector('#workspace-screen'); this.padScreen = document.querySelector('#pad-screen');
     document.querySelector('#disconnect').addEventListener('click', () => this.disconnect('You disconnected'));
     document.querySelector('#alerts-toggle').addEventListener('change', (event) => this.notifier.setEnabled(event.target.checked));
-    document.querySelector('#open-pad').addEventListener('click', () => this.openPad()); document.querySelector('#close-pad').addEventListener('click', () => this.closePad());
     peer.addEventListener('state', ({ detail }) => this.state(detail)); peer.addEventListener('peername', ({ detail }) => { document.querySelector('#peer-name').textContent = detail.name; }); peer.addEventListener('error', ({ detail }) => { this.announce(detail.message); this.notifier.alert('error'); });
     this.manager.addEventListener('progress', ({ detail }) => { if (detail.status === 'completed' && !this.completed.has(detail.id)) { this.completed.add(detail.id); this.notifier.alert('success'); } });
     this.manager.addEventListener('error', () => this.notifier.alert('error'));
     this.diagnosticsTimer = setInterval(() => this.updateDiagnostics(), 2500);
   }
   show() { document.querySelector('#pairing-screen').hidden = true; this.screen.hidden = false; document.querySelector('#peer-name').textContent = this.peer.remoteName; document.querySelector('#verified-badge').textContent = 'Verified'; document.querySelector('#verified-badge').classList.add('verified'); this.state(this.peer.state); document.querySelector('#files-title').focus?.(); this.announce('Verified private workspace ready'); }
-  openPad() { this.padScreen.append(this.padPanel); this.padPanel.hidden = false; this.padPanel.classList.add('force-visible'); this.padPanel.style.display = 'block'; this.screen.hidden = true; this.padScreen.hidden = false; document.querySelector('#pad-editor').style.display = 'block'; document.querySelector('#pad-editor').focus(); }
-  closePad() { document.querySelector('.workspace-grid').append(this.padPanel); this.padPanel.hidden = false; this.padPanel.classList.remove('force-visible'); this.padScreen.hidden = true; this.screen.hidden = false; document.querySelector('#files-title').focus?.(); }
   state(state) { const online = state.connection === 'connected' && state.control === 'open' && state.bulk === 'open'; document.querySelector('#peer-dot').classList.toggle('online', online); document.querySelector('#peer-status').textContent = `${state.connection} · control ${state.control} · bulk ${state.bulk}`; if (online && !this.onlineNotified) { this.onlineNotified = true; this.notifier.alert('success'); } if (!this.closing && ['failed','closed','disconnected'].includes(state.connection)) this.remoteDisconnected(state.connection); }
   async updateDiagnostics() {
     try {
@@ -13672,9 +13644,9 @@ class Workspace {
       const rtt = pair?.currentRoundTripTime != null ? `${Math.round(pair.currentRoundTripTime * 1000)} ms RTT` : 'RTT unavailable'; const bandwidth = pair?.availableOutgoingBitrate ? `${SIS.formatBytes(pair.availableOutgoingBitrate / 8)}/s available` : 'bandwidth estimate unavailable'; document.querySelector('#diagnostics-output').textContent = `${rtt} · ${bandwidth} · sent ${SIS.formatBytes(sent)} · received ${SIS.formatBytes(received)}`;
     } catch { document.querySelector('#diagnostics-output').textContent = 'Statistics unavailable in this browser.'; }
   }
-  async remoteDisconnected(state) { this.closing = true; clearInterval(this.diagnosticsTimer); await this.manager.close(); this.pad.close(); this.padUI.close(); this.notifier.alert('error'); this.announce(`Peer connection ${state}; transient session data cleared`); this.callbacks.disconnect?.(`Peer ${state}. Start a new session to reconnect.`); }
+  async remoteDisconnected(state) { this.closing = true; clearInterval(this.diagnosticsTimer); await this.manager.close(); this.notifier.alert('error'); this.announce(`Peer connection ${state}; transient session data cleared`); this.callbacks.disconnect?.(`Peer ${state}. Start a new session to reconnect.`); }
   announce(message) { document.querySelector('#live-status').textContent = message; }
-  async disconnect(reason) { this.closing = true; clearInterval(this.diagnosticsTimer); await this.manager.close(); this.pad.close(); this.padUI.close(); this.peer.close(); this.screen.hidden = true; this.padScreen.hidden = true; this.callbacks.disconnect?.(reason); }
+  async disconnect(reason) { this.closing = true; clearInterval(this.diagnosticsTimer); await this.manager.close(); this.peer.close(); this.screen.hidden = true; this.padScreen.hidden = true; this.callbacks.disconnect?.(reason); }
 }
 
 Object.assign(SIS, { Workspace });
@@ -13686,11 +13658,12 @@ const SIS = globalThis.ShareInSync ||= {};
 
 class App {
   constructor() {
-    this.peer = null; this.pairing = null; this.workspace = null; this.installPrompt = null;
+    this.peer = null; this.pairing = null; this.workspace = null; this.codeRoom = null; this.codeUI = null; this.installPrompt = null;
     this.home = document.querySelector('#home-screen');
     document.querySelector('#send-role').addEventListener('click', () => this.start('sender'));
     document.querySelector('#receive-role').addEventListener('click', () => this.start('receiver'));
     document.querySelector('#reconnect').addEventListener('click', () => this.reconnectSaved());
+    document.querySelector('#create-code-room').addEventListener('click', () => this.createCodeRoom()); document.querySelector('#join-code-room').addEventListener('click', () => this.joinCodeRoom()); document.querySelector('#code-room-slug').addEventListener('keydown', (event) => { if (event.key === 'Enter') this.joinCodeRoom(); }); document.querySelector('#close-pad').addEventListener('click', () => this.closeCodeRoom()); document.querySelector('#copy-room-link').addEventListener('click', () => this.copyRoomLink());
     document.querySelector('#home-button').addEventListener('click', () => this.reset('Returned home'));
     document.querySelector('#theme-button').addEventListener('click', () => this.toggleTheme());
     document.querySelector('#install-button').addEventListener('click', () => this.install());
@@ -13698,14 +13671,19 @@ class App {
     window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); this.installPrompt = event; document.querySelector('#install-button').hidden = false; });
     window.addEventListener('pagehide', () => this.destroy()); window.addEventListener('offline', () => this.compatibility()); window.addEventListener('online', () => this.compatibility());
     this.applyTheme(localStorage.getItem('shareinsync-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-    SIS.setLanguage('en'); this.updateReconnect(); this.compatibility(); this.registerServiceWorker();
+    SIS.setLanguage('en'); this.updateReconnect(); this.compatibility(); this.registerServiceWorker(); const linkedRoom = /^#code=([A-Z0-9]{6})$/u.exec(location.hash.toUpperCase()); if (linkedRoom) setTimeout(() => this.openCodeRoom(linkedRoom[1]), 0);
   }
   async start(role, resumeId = '') {
     await this.destroy(); this.peer = new SIS.PeerSession({ name: document.querySelector('#device-name').value }); this.pairing = new SIS.PairingUI(this.peer, { verified: () => this.openWorkspace(role), cancel: (reason) => this.reset(reason) }); await this.pairing.start(role, resumeId);
   }
   openWorkspace(role) { this.pairing?.close(); this.workspace = new SIS.Workspace(this.peer, role, { disconnect: (reason) => this.reset(reason) }); this.workspace.show(); }
   async reconnectSaved() { let saved; try { saved = JSON.parse(localStorage.getItem('shareinsync-cloud-session') || 'null'); } catch {} if (!saved?.id || !saved.role) return this.reset('No saved device. Scan a new QR.'); await this.start(saved.role, saved.id); }
-  async destroy() { if (this.workspace) { await this.workspace.manager.close(); this.workspace.pad.close(); } this.pairing?.close(); this.peer?.close(); this.workspace = this.pairing = this.peer = null; }
+  async createCodeRoom() { try { await this.openCodeRoom(await SIS.createCodeRoom()); } catch (error) { this.announce(error.message); } }
+  async joinCodeRoom() { const id = document.querySelector('#code-room-slug').value.trim().toUpperCase(); if (!/^[A-Z0-9]{6}$/u.test(id)) return this.announce('Enter a valid six-character room ID'); await this.openCodeRoom(id); }
+  async openCodeRoom(id) { await this.destroy(); this.codeRoom = new SIS.CloudCodeRoom(id); document.querySelector('#pad-screen').append(document.querySelector('#pad-panel')); document.querySelector('#pad-panel').classList.add('force-visible'); document.querySelector('#active-room-id').textContent = id; document.querySelector('#home-screen').hidden = true; document.querySelector('#pad-screen').hidden = false; history.replaceState(null, '', `#code=${id}`); await this.codeRoom.start(); this.codeUI = new SIS.PadUI(this.codeRoom); document.querySelector('#pad-editor').value = this.codeRoom.text; document.querySelector('#pad-language').value = this.codeRoom.language; this.codeUI.renderHighlight(); document.querySelector('#pad-editor').focus(); }
+  async closeCodeRoom() { this.codeRoom?.close(); this.codeUI?.close(); this.codeRoom = this.codeUI = null; history.replaceState(null, '', location.pathname); await this.reset('Code room closed'); }
+  async copyRoomLink() { try { await navigator.clipboard.writeText(location.href); this.announce('Code room invite copied'); } catch { this.announce('Copy the current page URL to invite someone'); } }
+  async destroy() { if (this.workspace) await this.workspace.manager.close(); this.codeRoom?.close(); this.codeUI?.close(); this.pairing?.close(); this.peer?.close(); this.workspace = this.pairing = this.peer = this.codeRoom = this.codeUI = null; }
   async reset(message = '') { await this.destroy(); for (const screen of document.querySelectorAll('.screen')) screen.hidden = screen !== this.home; document.querySelector('#verification-card').hidden = true; document.querySelector('#qr-canvas').hidden = true; document.querySelector('#qr-placeholder').hidden = false; document.querySelectorAll('.steps li').forEach((item, index) => item.classList.toggle('active', index === 0)); this.updateReconnect(); if (message) this.announce(message); }
   updateReconnect() { let saved; try { saved = JSON.parse(localStorage.getItem('shareinsync-cloud-session') || 'null'); } catch {} document.querySelector('#reconnect').hidden = !saved?.id; }
   applyTheme(theme) { document.documentElement.dataset.theme = theme; const button = document.querySelector('#theme-button'); button.textContent = theme === 'dark' ? '☀' : '☾'; button.setAttribute('aria-pressed', String(theme === 'dark')); }
