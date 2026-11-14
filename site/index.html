@@ -55,7 +55,7 @@
           <p class="lede">Send files directly between devices or open a live code room—no account required.</p>
         </div>
         <div id="reconnect-panel" class="reconnect-home" hidden><div><span class="reconnect-icon">↻</span><span><strong>Continue sharing</strong><small>Reconnect to your previously paired device</small></span></div><button id="reconnect" class="button secondary" type="button">Reconnect</button></div>
-        <section class="transfer-home" aria-labelledby="transfer-home-title"><div class="home-section-heading"><div><p class="panel-kicker">DIRECT TRANSFER</p><h2 id="transfer-home-title">Share files</h2></div><label class="device-name">This device <input id="device-name" maxlength="24" placeholder="e.g. Akash's phone" autocomplete="off"></label></div><div class="role-grid">
+        <section class="transfer-home" aria-labelledby="transfer-home-title"><input id="device-name" type="hidden"><div class="home-section-heading"><div><p class="panel-kicker">DIRECT TRANSFER</p><h2 id="transfer-home-title">Share files</h2></div></div><div class="role-grid">
           <button id="send-role" class="role-card send" type="button"><span class="role-icon">↗</span><strong data-i18n="send">Send</strong><span data-i18n="sendHint">Choose files or a folder, then show your pairing code.</span><em data-i18n="start">Start a private session →</em></button>
           <button id="receive-role" class="role-card receive" type="button"><span class="role-icon">↙</span><strong data-i18n="receive">Receive</strong><span data-i18n="receiveHint">Scan your peer's code and choose where incoming files go.</span><em data-i18n="join">Join a private session →</em></button>
         </div></section>
@@ -13666,6 +13666,7 @@ class App {
   constructor() {
     this.peer = null; this.pairing = null; this.workspace = null; this.codeRoom = null; this.codeUI = null; this.installPrompt = null;
     this.home = document.querySelector('#home-screen');
+    document.querySelector('#device-name').value = this.detectDeviceName();
     document.querySelector('#send-role').addEventListener('click', () => this.start('sender'));
     document.querySelector('#receive-role').addEventListener('click', () => this.start('receiver'));
     document.querySelector('#reconnect').addEventListener('click', () => this.reconnectSaved());
@@ -13682,6 +13683,7 @@ class App {
   async start(role, resumeId = '') {
     await this.destroy(); this.peer = new SIS.PeerSession({ name: document.querySelector('#device-name').value }); this.pairing = new SIS.PairingUI(this.peer, { verified: () => this.openWorkspace(role), cancel: (reason) => this.reset(reason) }); await this.pairing.start(role, resumeId);
   }
+  detectDeviceName() { const ua = navigator.userAgent || ''; const platform = navigator.userAgentData?.platform || navigator.platform || ''; if (/iPhone/iu.test(ua)) return 'iPhone'; if (/iPad/iu.test(ua) || /Mac/iu.test(platform) && navigator.maxTouchPoints > 1) return 'iPad'; if (/Android/iu.test(ua)) return /Mobile/iu.test(ua) ? 'Android phone' : 'Android tablet'; if (/Win/iu.test(platform) || /Windows/iu.test(ua)) return 'Windows PC'; if (/Mac/iu.test(platform) || /Macintosh/iu.test(ua)) return 'Mac'; if (/Linux/iu.test(platform) || /Linux/iu.test(ua)) return 'Linux device'; return 'Browser device'; }
   openWorkspace(role) { this.pairing?.close(); this.workspace = new SIS.Workspace(this.peer, role, { disconnect: (reason) => this.reset(reason) }); this.workspace.show(); }
   async reconnectSaved() { let saved; try { saved = JSON.parse(localStorage.getItem('shareinsync-cloud-session') || 'null'); } catch {} if (!saved?.id || !saved.role || saved.verified !== true) return this.reset('No verified saved device. Complete pairing first.'); await this.start(saved.role, saved.id); }
   async createCodeRoom() { try { await this.openCodeRoom(await SIS.createCodeRoom()); } catch (error) { this.announce(error.message); } }

@@ -1,4 +1,4 @@
-const CACHE = 'shareinsync-shell-v6';
+const CACHE = 'shareinsync-shell-v7';
 const SHELL = ['./', './index.html', './sw.js'];
 
 self.addEventListener('install', (event) => event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting())));
